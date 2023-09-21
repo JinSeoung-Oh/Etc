@@ -106,5 +106,25 @@ speedup = eager_med / compile_med
 print(f"(eval) eager median: {eager_med}, compile median: {compile_med}, speedup: {speedup}x")
 print("~" * 10)
 
+### The advantage of torch.compile lies in its ability to handle arbitrary Python code with minimal changes to existing code
 
-### 
+### TorchDynamo is responsible for JIT compiling arbitrary Python code into FX graphs, which can then be further optimized. 
+### TorchDynamo extracts FX graphs by analyzing Python bytecode during runtime and detecting calls to PyTorch operations.
+
+from typing import List
+def custom_backend(gm: torch.fx.GraphModule, example_inputs: List[torch.Tensor]):
+    print("custom backend called with FX graph:")
+    gm.graph.print_tabular()
+    return gm.forward
+
+# *** Reset since we are using a different backend ***
+torch._dynamo.reset()
+
+opt_model = torch.compile(init_model(), backend=custom_backend)
+opt_model(generate_data(16)[0])
+
+### When TorchDynamo encounters unsupported Python features, such as data-dependent control flow, 
+### it breaks the computation graph, lets the default Python interpreter handle the unsupported code, 
+### then resumes capturing the graph.
+### When encountering unsupported Python features, previous solutions either raise an error or silently fail. 
+### TorchDynamo, on the other hand, will break the computation graph.
