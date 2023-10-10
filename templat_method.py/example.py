@@ -1,3 +1,11 @@
+##  I want to Add def box_coor 
+##  At first, define box_coor function in templte
+##    def box_coor(self, results, batch):
+##        #print('boxbox')
+##        return results
+
+## And then, have to define box_coor function in this script very deteail.
+
 import torch
 from ultralytics.yolo.engine.results import Results
 from predict import BasePredictor 
