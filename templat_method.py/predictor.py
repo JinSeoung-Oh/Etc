@@ -104,6 +104,7 @@ class BasePredictor:
     def postprocess(self, preds, img, orig_img, classes=None):
         return preds
         
+    # Add box_coor def in templet
     def box_coor(self, results, batch):
         #print('boxbox')
         return results
@@ -219,6 +220,7 @@ class BasePredictor:
                 if self.args.save:
                     self.save_preds(vid_cap, i, str(self.save_dir / p.name))
                     
+                # add box_coor activatation
                 box = self.box_coor(i, results)
                 box_result.append(box)
                 
